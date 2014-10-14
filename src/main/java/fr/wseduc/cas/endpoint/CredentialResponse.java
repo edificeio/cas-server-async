@@ -1,0 +1,30 @@
+package fr.wseduc.cas.endpoint;
+
+import fr.wseduc.cas.data.Request;
+import fr.wseduc.cas.data.Response;
+import fr.wseduc.cas.entities.LoginTicket;
+import fr.wseduc.cas.entities.ServiceTicket;
+import fr.wseduc.cas.exceptions.AuthenticationException;
+
+public abstract class CredentialResponse {
+
+	public abstract void loginRequestorResponse(Request request, LoginTicket loginTicket,
+			String service, boolean renew, boolean gateway, String method);
+
+	public void loginAcceptorResponse(Request request, ServiceTicket serviceTicket) {
+		Response response = request.getResponse();
+		response.putHeader("Location", serviceTicket.redirectUri());
+		response.setStatusCode(302);
+		response.close();
+	}
+
+	public void denyResponse(Request request, AuthenticationException e) {
+		Response response = request.getResponse();
+		response.setStatusCode(400);
+		response.setBody(e.getMessage());
+		response.close();
+	}
+
+	public abstract void loggedIn(Request request);
+
+}
