@@ -3,8 +3,7 @@ package fr.wseduc.cas.test.data;
 import fr.wseduc.cas.async.Handler;
 import fr.wseduc.cas.entities.AuthCas;
 import fr.wseduc.cas.data.DataHandler;
-import fr.wseduc.cas.data.Request;
-import fr.wseduc.cas.entities.ServiceTicket;
+import fr.wseduc.cas.http.Request;
 import fr.wseduc.cas.entities.User;
 import fr.wseduc.cas.exceptions.AuthenticationException;
 import fr.wseduc.cas.exceptions.Try;
@@ -32,12 +31,22 @@ public class TestDataHandler extends DataHandler {
 	}
 
 	@Override
+	protected void getAuthByProxyGrantingTicket(String pgt, Handler<AuthCas> handler) {
+
+	}
+
+	@Override
 	protected void getUser(String ticket, Handler<User> handler) {
 
 	}
 
 	@Override
 	protected void getAuth(String ticket, Handler<AuthCas> handler) {
+
+	}
+
+	@Override
+	protected void getAuthByProxyTicket(String ticket, Handler<AuthCas> handler) {
 
 	}
 

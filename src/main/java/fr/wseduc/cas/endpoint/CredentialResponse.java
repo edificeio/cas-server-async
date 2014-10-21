@@ -1,7 +1,7 @@
 package fr.wseduc.cas.endpoint;
 
-import fr.wseduc.cas.data.Request;
-import fr.wseduc.cas.data.Response;
+import fr.wseduc.cas.http.Request;
+import fr.wseduc.cas.http.Response;
 import fr.wseduc.cas.entities.LoginTicket;
 import fr.wseduc.cas.entities.ServiceTicket;
 import fr.wseduc.cas.exceptions.AuthenticationException;

@@ -1,4 +1,4 @@
-package fr.wseduc.cas.data;
+package fr.wseduc.cas.http;
 
 public interface Response {
 

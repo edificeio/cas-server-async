@@ -7,6 +7,7 @@ import fr.wseduc.cas.entities.LoginTicket;
 import fr.wseduc.cas.entities.ServiceTicket;
 import fr.wseduc.cas.exceptions.AuthenticationException;
 import fr.wseduc.cas.exceptions.Try;
+import fr.wseduc.cas.http.Request;
 
 import java.util.Map;
 

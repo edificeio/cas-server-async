@@ -1,9 +1,11 @@
 package fr.wseduc.cas.test.data;
 
+import fr.wseduc.cas.http.Response;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class MockResponse implements fr.wseduc.cas.data.Response {
+public class MockResponse implements Response {
 
 	private Map<String, String> headers = new HashMap<>();
 	private int statusCode = 200;

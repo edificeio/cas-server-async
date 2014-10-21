@@ -1,8 +1,8 @@
 package fr.wseduc.cas.test.data;
 
 import fr.wseduc.cas.async.Handler;
-import fr.wseduc.cas.data.Request;
-import fr.wseduc.cas.data.Response;
+import fr.wseduc.cas.http.Request;
+import fr.wseduc.cas.http.Response;
 
 import java.util.Map;
 

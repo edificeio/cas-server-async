@@ -1,6 +1,5 @@
 package fr.wseduc.cas.entities;
 
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +28,34 @@ public class AuthCas {
 		for (ServiceTicket st : serviceTickets) {
 			if (ticket.equals(st.getTicket())) {
 				return st;
+			}
+		}
+		return null;
+	}
+
+	public ServiceTicket getServiceTicketByProxyTicket(String ticket) {
+		if (ticket == null) {
+			return  null;
+		}
+		for (ServiceTicket st : serviceTickets) {
+			if (st.getPgt() != null && st.getPgt().getProxyTickets() != null) {
+				for (ProxyTicket pt : st.getPgt().getProxyTickets()) {
+					if (ticket.equals(pt.getPgId())) {
+						return st;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	public ServiceTicket getServiceTicketByProxyGrantingTicket(String ticket) {
+		if (ticket == null) {
+			return  null;
+		}
+		for (ServiceTicket st : serviceTickets) {
+			if (st.getPgt() != null && ticket.equals(st.getPgt().getPgtId())) {
+						return st;
 			}
 		}
 		return null;

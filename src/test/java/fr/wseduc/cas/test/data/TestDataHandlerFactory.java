@@ -2,7 +2,7 @@ package fr.wseduc.cas.test.data;
 
 import fr.wseduc.cas.data.DataHandler;
 import fr.wseduc.cas.data.DataHandlerFactory;
-import fr.wseduc.cas.data.Request;
+import fr.wseduc.cas.http.Request;
 
 public class TestDataHandlerFactory implements DataHandlerFactory {
 
