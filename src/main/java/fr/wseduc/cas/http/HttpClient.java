@@ -6,4 +6,6 @@ public interface HttpClient {
 
 	void get(String uri, Handler<ClientResponse> handler);
 
+	void post(String uri, String body, Handler<ClientResponse> handler);
+
 }

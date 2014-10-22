@@ -7,14 +7,26 @@ import fr.wseduc.cas.entities.LoginTicket;
 import fr.wseduc.cas.entities.ServiceTicket;
 import fr.wseduc.cas.exceptions.AuthenticationException;
 import fr.wseduc.cas.exceptions.Try;
+import fr.wseduc.cas.http.HttpClient;
+import fr.wseduc.cas.http.HttpClientFactory;
 import fr.wseduc.cas.http.Request;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 public class Credential {
 
 	private DataHandlerFactory dataHandlerFactory;
 	private CredentialResponse credentialResponse;
+	private HttpClientFactory httpClientFactory;
+	private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+	private static final Logger log = Logger.getLogger("Credential");
 
 	public void loginRequestor(final Request request) {
 		final DataHandler dataHandler = dataHandlerFactory.create(request);
@@ -104,17 +116,64 @@ public class Credential {
 		});
 	}
 
-	public void logout(Request request) {
-
+	public void logout(final Request request) {
+		final String service = request.getParameter("service");
+		final DataHandler dataHandler = dataHandlerFactory.create(request);
+		dataHandler.getAndDestroyAuth(request, new Handler<AuthCas>(){
+			@Override
+			public void handle(AuthCas authCas) {
+				if (authCas != null) {
+					singleLogout(authCas);
+				}
+				if (service != null && !service.trim().isEmpty()) {
+					credentialResponse.logoutRedirectService(request, service);
+				} else {
+					credentialResponse.logoutResponse(request);
+				}
+			}
+		});
 	}
 
-	protected void logoutResponse() {
-
+	public void logout(final String user) {
+		final DataHandler dataHandler = dataHandlerFactory.create(null);
+		dataHandler.getAndDestroyAuth(user, new Handler<AuthCas>(){
+			@Override
+			public void handle(AuthCas authCas) {
+				if (authCas != null) {
+					singleLogout(authCas);
+				}
+			}
+		});
 	}
 
-	private void singleLogout() {
-
+	private void singleLogout(AuthCas authCas) {
+		for (ServiceTicket st : authCas.getServiceTickets()) {
+			try {
+				URI uri = new URI(st.redirectUri());
+				int port = uri.getPort() > 0 ? uri.getPort() :
+						("https".equals(uri.getScheme()) ? 443 : 80);
+				HttpClient client = httpClientFactory.create(uri.getHost(),
+						port, "https".equals(uri.getScheme()));
+				String serviceUri = st.redirectUri().replaceFirst(
+						"^(?:([^:/?#]+):)?(?://((?:(([^:@]*):?([^:@]*))?@)?([^:/?#]*)(?::(\\\\d*))?))?", "");
+				client.post(serviceUri, sloBody(st.getTicket()), null);
+			} catch (URISyntaxException e) {
+				log.severe(e.getMessage());
+			}
+		}
 	}
+
+	private String sloBody(String ticket) {
+		return "<samlp:LogoutRequest xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\"\n" +
+				"     ID=\"" + UUID.randomUUID().toString() + "\" Version=\"2.0\" IssueInstant=\"" +
+				df.format(new Date()) + "\">\n" +
+				"    <saml:NameID xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\">\n" +
+				"      @NOT_USED@\n" +
+				"    </saml:NameID>\n" +
+				"    <samlp:SessionIndex>" + ticket + "</samlp:SessionIndex>\n" +
+				"  </samlp:LogoutRequest>";
+	}
+
 
 	public void setDataHandlerFactory(DataHandlerFactory dataHandlerFactory) {
 		this.dataHandlerFactory = dataHandlerFactory;
@@ -124,4 +183,7 @@ public class Credential {
 		this.credentialResponse = credentialResponse;
 	}
 
+	public void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+		this.httpClientFactory = httpClientFactory;
+	}
 }

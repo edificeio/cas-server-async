@@ -27,4 +27,15 @@ public abstract class CredentialResponse {
 
 	public abstract void loggedIn(Request request);
 
+	public void logoutRedirectService(Request request, String service) {
+		Response response = request.getResponse();
+		response.putHeader("Location", service);
+		response.setStatusCode(302);
+		response.close();
+	}
+
+	public void logoutResponse(Request request) {
+
+	}
+
 }

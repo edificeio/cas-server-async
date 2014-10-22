@@ -120,4 +120,8 @@ public abstract class DataHandler {
 
 	public abstract void persistAuth(AuthCas authCas, Handler<Boolean> handler);
 
+	public abstract void getAndDestroyAuth(Request request, Handler<AuthCas> handler);
+
+	public abstract void getAndDestroyAuth(String user, Handler<AuthCas> handler);
+
 }

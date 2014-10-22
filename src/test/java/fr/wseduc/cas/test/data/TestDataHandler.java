@@ -60,4 +60,14 @@ public class TestDataHandler extends DataHandler {
 
 	}
 
+	@Override
+	public void getAndDestroyAuth(Request request, Handler<AuthCas> handler) {
+
+	}
+
+	@Override
+	public void getAndDestroyAuth(String user, Handler<AuthCas> handler) {
+
+	}
+
 }
