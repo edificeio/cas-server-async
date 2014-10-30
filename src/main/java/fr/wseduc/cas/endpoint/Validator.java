@@ -1,49 +1,39 @@
 package fr.wseduc.cas.endpoint;
 
-import edu.yale.tp.cas.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Logger;
+
 import fr.wseduc.cas.async.Handler;
 import fr.wseduc.cas.async.Tuple;
 import fr.wseduc.cas.data.DataHandler;
 import fr.wseduc.cas.data.DataHandlerFactory;
-import fr.wseduc.cas.entities.*;
+import fr.wseduc.cas.entities.AuthCas;
+import fr.wseduc.cas.entities.ProxyGrantingTicket;
+import fr.wseduc.cas.entities.ServiceTicket;
+import fr.wseduc.cas.entities.User;
+import fr.wseduc.cas.exceptions.ErrorCodes;
+import fr.wseduc.cas.exceptions.Try;
+import fr.wseduc.cas.exceptions.ValidationException;
 import fr.wseduc.cas.http.ClientResponse;
 import fr.wseduc.cas.http.HttpClient;
 import fr.wseduc.cas.http.HttpClientFactory;
 import fr.wseduc.cas.http.Request;
-import fr.wseduc.cas.exceptions.ErrorCodes;
-import fr.wseduc.cas.exceptions.Try;
-import fr.wseduc.cas.exceptions.ValidationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.StringWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+public abstract class Validator {
 
-public class Validator {
+	protected DataHandlerFactory dataHandlerFactory;
+	protected HttpClientFactory httpClientFactory;
+	protected static final Logger log = Logger.getLogger("Validator");
 
-	private DataHandlerFactory dataHandlerFactory;
-	private HttpClientFactory httpClientFactory;
-	private static final Logger log = Logger.getLogger("Validator");
+	public abstract void serviceValidate(final Request request);
 
-	public void serviceValidate(final Request request) {
-		final String service = request.getParameter("service");
-		final String ticket = request.getParameter("ticket");
-		final boolean renew = Boolean.getBoolean(request.getParameter("renew"));
-		final String pgtUrl = request.getParameter("pgtUrl");
+	protected void doValidate(final Request request, final String service, final String ticket) {
+		doValidate(request, service, ticket, false, null);
+	}
+
+	protected void doValidate(final Request request, final String service, final String ticket, final boolean renew, final String pgtUrl) {
+
 		if (service != null && ticket != null && !service.trim().isEmpty() && !ticket.trim().isEmpty()) {
 			if (ticket.startsWith("ST-")) {
 				final DataHandler dataHandler = dataHandlerFactory.create(request);
@@ -88,7 +78,7 @@ public class Validator {
 									@Override
 									public void handle(Boolean saved) {
 										if (saved) {
-											success(request, user);
+											success(request, user, service);
 										} else {
 											error(request, ErrorCodes.INTERNAL_ERROR);
 										}
@@ -108,7 +98,7 @@ public class Validator {
 		}
 	}
 
-	private void validateProxy(String pgtUrl, final ServiceTicket st,
+	protected void validateProxy(String pgtUrl, final ServiceTicket st,
 			final Handler<Try<ValidationException, ProxyGrantingTicket>> handler) {
 		try {
 			URI uri = new URI(pgtUrl);
@@ -144,178 +134,22 @@ public class Validator {
 		}
 	}
 
-	private void success(Request request, User user) {
-		success(request, user, null);
-	}
+	protected abstract void success(Request request, User user, String service);
 
-	private void success(Request request, User user, String pgtiou) {
-		success(request, user, pgtiou, null);
-	}
+	protected abstract void success(Request request, User user, String service, String pgtiou);
 
-	private void success(Request request, User user, String pgtiou, String[] proxyUrls) {
-		AuthenticationSuccessType authenticationSuccessType = new AuthenticationSuccessType();
-		authenticationSuccessType.setUser(user.getUser());
-		authenticationSuccessType.setAttributes(new AttributesType());
-		authenticationSuccessType.getAttributes().setUserAttributes(new AttributesType.UserAttributes());
-		if (pgtiou != null && !pgtiou.trim().isEmpty()) {
-			authenticationSuccessType.setProxyGrantingTicket(pgtiou);
-		}
-		if (proxyUrls != null && proxyUrls.length > 0 ) {
-			ProxiesType proxiesType = new ProxiesType();
-			List<String> proxies = proxiesType.getProxy();
-			Collections.addAll(proxies, proxyUrls);
-			authenticationSuccessType.setProxies(proxiesType);
-		}
-		List<Object> l = authenticationSuccessType.getAttributes().getUserAttributes().getAny();
-		try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.newDocument();
-			for (Map.Entry<String, String> e : user.getAttributes().entrySet()) {
-				Element element = doc.createElement(e.getKey());
-				element.setTextContent(e.getValue());
-				l.add(element);
-			}
-			ServiceResponseType serviceResponseType = new ServiceResponseType();
-			serviceResponseType.setAuthenticationSuccess(authenticationSuccessType);
-			sendResponse(request, serviceResponseType);
-		} catch (ParserConfigurationException e) {
-			log.severe(e.toString());
-			request.getResponse().setStatusCode(500);
-			request.getResponse().setBody(e.getMessage());
-		}
-	}
+	protected abstract void success(Request request, User user, String service, String pgtiou, String[] proxyUrls);
 
-	private void error(Request request, ErrorCodes invalidRequest) {
-		AuthenticationFailureType authenticationFailureType = new AuthenticationFailureType();
-		authenticationFailureType.setCode(invalidRequest.name());
-		authenticationFailureType.setValue(invalidRequest.getMessage());
-		ServiceResponseType serviceResponseType = new ServiceResponseType();
-		serviceResponseType.setAuthenticationFailure(authenticationFailureType);
-		sendResponse(request, serviceResponseType);
-	}
+	protected abstract void error(Request request, ErrorCodes invalidRequest);
 
-	private void sendResponse(Request request, ServiceResponseType serviceResponseType) {
-		try {
-			StringWriter stringWriter = new StringWriter();
-			JAXBContext context = JAXBContext.newInstance(ServiceResponseType.class);
-			Marshaller marshaller = context.createMarshaller();
-			XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance()
-					.createXMLStreamWriter(stringWriter);
-			xmlStreamWriter.setPrefix("cas", "http://www.yale.edu/tp/cas");
-			marshaller.marshal(new ObjectFactory().createServiceResponse(serviceResponseType), xmlStreamWriter);
-			request.getResponse().setStatusCode(200);
-			request.getResponse().setBody(stringWriter.toString());
-		} catch (JAXBException | XMLStreamException  e) {
-			log.severe(e.toString());
-			request.getResponse().setStatusCode(500);
-			request.getResponse().setBody(e.getMessage());
-		} finally {
-			request.getResponse().close();
-		}
-	}
+	public abstract void proxyValidate(final Request request);
 
-	public void proxyValidate(final Request request) {
-		final String ticket = request.getParameter("ticket");
-		if (ticket != null && ticket.startsWith("PT-")) {
-			final String service = request.getParameter("service");
-			final DataHandler dataHandler = dataHandlerFactory.create(request);
-			dataHandler.validateProxyTicket(ticket, service,
-					new Handler<Try<ValidationException, Tuple<AuthCas, User>>>() {
-				@Override
-				public void handle(Try<ValidationException, Tuple<AuthCas, User>> event) {
-					try {
-						final Tuple<AuthCas, User> t = event.get();
-						AuthCas authCas = t._1;
-						final ServiceTicket st = authCas.getServiceTicket(ticket);
-						if (st != null && st.getPgt() != null && st.getPgt().exists(ticket)) {
-							final String [] urls = new String[st.getPgt().getPgtUrls().size()];
-							int i = urls.length;
-							for (String url : st.getPgt().getPgtUrls()) {
-								urls[--i] = url;
-							}
-							dataHandler.persistAuth(t._1, new Handler<Boolean>() {
-								@Override
-								public void handle(Boolean saved) {
-									if (saved) {
-										success(request, t._2, st.getPgt().getPgtIOU(), urls);
-									} else {
-										error(request, ErrorCodes.INTERNAL_ERROR);
-									}
-								}
-							});
-						} else {
-							error(request, ErrorCodes.INVALID_TICKET);
-						}
-					} catch (ValidationException e) {
-						error(request, e.getError());
-					}
-				}
-			});
-		} else {
-			serviceValidate(request);
-		}
-	}
+	public abstract void proxy(final Request request);
 
-	public void proxy(final Request request) {
-		final String pgt = request.getParameter("pgt");
-		final String targetService = request.getParameter("targetService");
-		if (pgt != null && !pgt.trim().isEmpty() &&
-				targetService != null && !targetService.trim().isEmpty()) {
-			final DataHandler dataHandler = dataHandlerFactory.create(request);
-			dataHandler.validateProxyGrantingTicket(pgt, targetService,
-					new Handler<Try<ValidationException, AuthCas>>() {
-				@Override
-				public void handle(Try<ValidationException, AuthCas> event) {
-					try {
-						AuthCas authCas = event.get();
-						ServiceTicket st = authCas.getServiceTicketByProxyGrantingTicket(pgt);
-						if (st != null && st.getPgt() != null) {
-							final ProxyTicket pt = new ProxyTicket();
-							st.getPgt().getProxyTickets().add(pt);
-							dataHandler.persistAuth(authCas, new Handler<Boolean>(){
-								@Override
-								public void handle(Boolean saved) {
-									if (saved) {
-										successProxy(request, pt.getPgId());
-									} else {
-										errorProxy(request, ErrorCodes.INTERNAL_ERROR);
-									}
-								}
-							});
-						} else {
-							errorProxy(request, ErrorCodes.INTERNAL_ERROR);
-						}
-					} catch (ValidationException e) {
-						errorProxy(request, e.getError());
-					}
-				}
-			});
-		} else {
-			errorProxy(request, ErrorCodes.INVALID_REQUEST);
-		}
-	}
+	protected abstract void successProxy(Request request, String pgId);
 
-	private void successProxy(Request request, String pgId) {
-		ProxySuccessType proxySuccessType = new ProxySuccessType();
-		proxySuccessType.setProxyTicket(pgId);
-		ServiceResponseType serviceResponseType = new ServiceResponseType();
-		serviceResponseType.setProxySuccess(proxySuccessType);
-		sendResponse(request, serviceResponseType);
-	}
+	protected abstract void errorProxy(Request request, ErrorCodes invalidRequest);
 
-	private void errorProxy(Request request, ErrorCodes invalidRequest) {
-		ProxyFailureType proxyFailureType = new ProxyFailureType();
-		proxyFailureType.setCode(invalidRequest.name());
-		proxyFailureType.setValue(invalidRequest.getMessage());
-		ServiceResponseType serviceResponseType = new ServiceResponseType();
-		serviceResponseType.setProxyFailure(proxyFailureType);
-		sendResponse(request, serviceResponseType);
-	}
-
-	public void samlValidate(Request request) {
-
-	}
 
 	public void setDataHandlerFactory(DataHandlerFactory dataHandlerFactory) {
 		this.dataHandlerFactory = dataHandlerFactory;

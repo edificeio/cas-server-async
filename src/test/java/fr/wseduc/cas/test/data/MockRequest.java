@@ -1,10 +1,10 @@
 package fr.wseduc.cas.test.data;
 
+import java.util.Map;
+
 import fr.wseduc.cas.async.Handler;
 import fr.wseduc.cas.http.Request;
 import fr.wseduc.cas.http.Response;
-
-import java.util.Map;
 
 public class MockRequest implements Request {
 
@@ -42,6 +42,11 @@ public class MockRequest implements Request {
 
 	@Override
 	public void getFormAttributesMap(Handler<Map<String, String>> handler) {
+
+	}
+
+	@Override
+	public void getBody(Handler<String> handler, String encoding) {
 
 	}
 

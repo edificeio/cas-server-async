@@ -1,16 +1,5 @@
 package fr.wseduc.cas.endpoint;
 
-import fr.wseduc.cas.async.Handler;
-import fr.wseduc.cas.data.*;
-import fr.wseduc.cas.entities.AuthCas;
-import fr.wseduc.cas.entities.LoginTicket;
-import fr.wseduc.cas.entities.ServiceTicket;
-import fr.wseduc.cas.exceptions.AuthenticationException;
-import fr.wseduc.cas.exceptions.Try;
-import fr.wseduc.cas.http.HttpClient;
-import fr.wseduc.cas.http.HttpClientFactory;
-import fr.wseduc.cas.http.Request;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
@@ -19,6 +8,18 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
+
+import fr.wseduc.cas.async.Handler;
+import fr.wseduc.cas.data.DataHandler;
+import fr.wseduc.cas.data.DataHandlerFactory;
+import fr.wseduc.cas.entities.AuthCas;
+import fr.wseduc.cas.entities.LoginTicket;
+import fr.wseduc.cas.entities.ServiceTicket;
+import fr.wseduc.cas.exceptions.AuthenticationException;
+import fr.wseduc.cas.exceptions.Try;
+import fr.wseduc.cas.http.HttpClient;
+import fr.wseduc.cas.http.HttpClientFactory;
+import fr.wseduc.cas.http.Request;
 
 public class Credential {
 
@@ -30,7 +31,7 @@ public class Credential {
 
 	public void loginRequestor(final Request request) {
 		final DataHandler dataHandler = dataHandlerFactory.create(request);
-		final String service = request.getParameter("service");
+		final String service = request.getParameter("service") != null ? request.getParameter("service") : request.getParameter("TARGET");
 		final boolean renew = Boolean.getBoolean(request.getParameter("renew"));
 		final boolean gateway = Boolean.getBoolean(request.getParameter("gateway"));
 		final String method = request.getParameter("method") != null ? request.getParameter("method") : "GET";
@@ -91,12 +92,15 @@ public class Credential {
 	}
 
 	private void generateServiceTicket(final Request request, final AuthCas authCas, final DataHandler dataHandler) {
-		final String service = request.getParameter("service");
+		final String service = request.getParameter("service") != null ? request.getParameter("service") : request.getParameter("TARGET");
 		dataHandler.validateService(service, new Handler<Boolean>(){
 			@Override
 			public void handle(Boolean success) {
 				if (success) {
 					final ServiceTicket serviceTicket = new ServiceTicket(service);
+					if (request.getParameter("TARGET") != null) {
+						serviceTicket.setTicketParameter("SAMLart");
+					}
 					authCas.addServiceTicket(serviceTicket);
 					dataHandler.persistAuth(authCas, new Handler<Boolean>() {
 						@Override

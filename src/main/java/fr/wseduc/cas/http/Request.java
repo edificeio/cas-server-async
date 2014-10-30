@@ -1,8 +1,8 @@
 package fr.wseduc.cas.http;
 
-import fr.wseduc.cas.async.Handler;
-
 import java.util.Map;
+
+import fr.wseduc.cas.async.Handler;
 
 public interface Request {
 
@@ -16,4 +16,5 @@ public interface Request {
 
 	void getFormAttributesMap(Handler<Map<String, String>> handler);
 
+	void getBody(Handler<String> handler, String encoding);
 }

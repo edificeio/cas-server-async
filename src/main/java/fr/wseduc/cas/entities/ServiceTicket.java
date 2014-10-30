@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public class ServiceTicket {
 
+	private String ticketParameter = "ticket";
 	private String ticket;
 	private String service;
 	private ProxyGrantingTicket pgt;
@@ -37,8 +38,7 @@ public class ServiceTicket {
 	}
 
 	public String redirectUri() {
-		return (service.contains("?")) ?
-				service + "&ticket=" + ticket : service + "?ticket=" + ticket;
+		return service + (service = (service.contains("?") ? "&" : "?") + ticketParameter + "=" + ticket);
 	}
 
 	public ProxyGrantingTicket getPgt() {
@@ -63,6 +63,14 @@ public class ServiceTicket {
 
 	public void setUsed(boolean used) {
 		this.used = used;
+	}
+
+	public String getTicketParameter() {
+		return ticketParameter;
+	}
+
+	public void setTicketParameter(String ticketParameter) {
+		this.ticketParameter = ticketParameter;
 	}
 
 }
