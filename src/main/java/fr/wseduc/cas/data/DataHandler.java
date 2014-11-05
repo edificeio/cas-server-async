@@ -44,10 +44,10 @@ public abstract class DataHandler {
 		});
 	}
 
-	private void validateService(final AuthCas authCas, ServiceTicket st, String service,
+	private void validateService(final AuthCas authCas, final ServiceTicket st, final String service,
 			final Handler<Try<ValidationException, Tuple<AuthCas, User>>> handler) {
 		if (st.getService().equals(service)) {
-			getUser(authCas.getUser(), new Handler<User>() {
+			getUser(authCas.getUser(), service, new Handler<User>() {
 				@Override
 				public void handle(User user) {
 					if (user != null) {
@@ -110,7 +110,7 @@ public abstract class DataHandler {
 
 	protected abstract void getAuthByProxyGrantingTicket(String pgt, Handler<AuthCas> handler);
 
-	protected abstract void getUser(String userId, Handler<User> handler);
+	protected abstract void getUser(String userId, String service, Handler<User> handler);
 
 	protected abstract void getAuth(String ticket, Handler<AuthCas> handler);
 

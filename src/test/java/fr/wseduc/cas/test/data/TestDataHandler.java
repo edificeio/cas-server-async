@@ -1,15 +1,15 @@
 package fr.wseduc.cas.test.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import fr.wseduc.cas.async.Handler;
-import fr.wseduc.cas.entities.AuthCas;
 import fr.wseduc.cas.data.DataHandler;
-import fr.wseduc.cas.http.Request;
+import fr.wseduc.cas.entities.AuthCas;
 import fr.wseduc.cas.entities.User;
 import fr.wseduc.cas.exceptions.AuthenticationException;
 import fr.wseduc.cas.exceptions.Try;
-
-import java.util.HashMap;
-import java.util.Map;
+import fr.wseduc.cas.http.Request;
 
 public class TestDataHandler extends DataHandler {
 
@@ -36,7 +36,7 @@ public class TestDataHandler extends DataHandler {
 	}
 
 	@Override
-	protected void getUser(String ticket, Handler<User> handler) {
+	protected void getUser(String ticket, String service, Handler<User> handler) {
 
 	}
 
