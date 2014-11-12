@@ -44,7 +44,7 @@ public abstract class DataHandler {
 		});
 	}
 
-	private void validateService(final AuthCas authCas, final ServiceTicket st, final String service,
+	protected void validateService(final AuthCas authCas, final ServiceTicket st, final String service,
 			final Handler<Try<ValidationException, Tuple<AuthCas, User>>> handler) {
 		if (st.getService().equals(service)) {
 			getUser(authCas.getUser(), service, new Handler<User>() {
