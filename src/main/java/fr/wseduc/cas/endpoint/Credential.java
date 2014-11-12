@@ -98,6 +98,10 @@ public class Credential {
 			public void handle(Boolean success) {
 				if (success) {
 					final ServiceTicket serviceTicket = new ServiceTicket(service);
+					final String ticketParameterName = request.getParameter("ticketAttributeName");
+					if (ticketParameterName != null && !ticketParameterName.trim().isEmpty()) {
+						serviceTicket.setTicketParameter(ticketParameterName);
+					}
 					if (request.getParameter("TARGET") != null) {
 						serviceTicket.setTicketParameter("SAMLart");
 					}
