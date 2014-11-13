@@ -63,8 +63,6 @@ public class CasValidator extends Validator {
 	protected void success(Request request, User user, String service, String pgtiou, String[] proxyUrls) {
 		AuthenticationSuccessType authenticationSuccessType = new AuthenticationSuccessType();
 		authenticationSuccessType.setUser(user.getUser());
-		authenticationSuccessType.setAttributes(new AttributesType());
-		authenticationSuccessType.getAttributes().setUserAttributes(new AttributesType.UserAttributes());
 		if (pgtiou != null && !pgtiou.trim().isEmpty()) {
 			authenticationSuccessType.setProxyGrantingTicket(pgtiou);
 		}
@@ -74,15 +72,20 @@ public class CasValidator extends Validator {
 			Collections.addAll(proxies, proxyUrls);
 			authenticationSuccessType.setProxies(proxiesType);
 		}
-		List<Object> l = authenticationSuccessType.getAttributes().getUserAttributes().getAny();
 		try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			Document doc = docBuilder.newDocument();
-			for (Map.Entry<String, String> e : user.getAttributes().entrySet()) {
-				Element element = doc.createElement(e.getKey());
-				element.setTextContent(e.getValue());
-				l.add(element);
+			if (user.getAttributes() != null) {
+				authenticationSuccessType.setAttributes(new AttributesType());
+				authenticationSuccessType.getAttributes().setUserAttributes(
+						new AttributesType.UserAttributes());
+				List<Object> l = authenticationSuccessType.getAttributes().getUserAttributes().getAny();
+				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+				Document doc = docBuilder.newDocument();
+				for (Map.Entry<String, String> e : user.getAttributes().entrySet()) {
+					Element element = doc.createElement(e.getKey());
+					element.setTextContent(e.getValue());
+					l.add(element);
+				}
 			}
 			ServiceResponseType serviceResponseType = new ServiceResponseType();
 			serviceResponseType.setAuthenticationSuccess(authenticationSuccessType);
@@ -218,7 +221,7 @@ public class CasValidator extends Validator {
 			marshaller.marshal(new ObjectFactory().createServiceResponse(serviceResponseType), xmlStreamWriter);
 			request.getResponse().setStatusCode(200);
 			request.getResponse().setBody(stringWriter.toString());
-		} catch (JAXBException | XMLStreamException  e) {
+		} catch (JAXBException | XMLStreamException e) {
 			log.severe(e.toString());
 			request.getResponse().setStatusCode(500);
 			request.getResponse().setBody(e.getMessage());
