@@ -10,18 +10,14 @@ import org.junit.Test;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class XmlTest {
 
 	@Test
-	public void marshallSuccessTest() throws JAXBException, XMLStreamException {
+	public void marshallSuccessTest() throws JAXBException {
 		User user = new User();
 		user.setUser("bla");
 		user.setAttributes(new HashMap<String, String>());
@@ -41,10 +37,8 @@ public class XmlTest {
 		JAXBContext context = JAXBContext.newInstance(ServiceResponseType.class);
 		Marshaller marshaller = context.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-		XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance()
-				.createXMLStreamWriter(stringWriter);
-		xmlStreamWriter.setPrefix("cas", "http://www.yale.edu/tp/cas");
-		marshaller.marshal(new ObjectFactory().createServiceResponse(serviceResponseType), xmlStreamWriter);
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshaller.marshal(new ObjectFactory().createServiceResponse(serviceResponseType), stringWriter);
 		System.out.println(stringWriter.toString());
 	}
 

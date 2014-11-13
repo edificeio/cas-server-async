@@ -11,9 +11,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -215,13 +212,11 @@ public class CasValidator extends Validator {
 			JAXBContext context = JAXBContext.newInstance(ServiceResponseType.class);
 			Marshaller marshaller = context.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-			XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance()
-					.createXMLStreamWriter(stringWriter);
-			xmlStreamWriter.setPrefix("cas", "http://www.yale.edu/tp/cas");
-			marshaller.marshal(new ObjectFactory().createServiceResponse(serviceResponseType), xmlStreamWriter);
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			marshaller.marshal(new ObjectFactory().createServiceResponse(serviceResponseType), stringWriter);
 			request.getResponse().setStatusCode(200);
 			request.getResponse().setBody(stringWriter.toString());
-		} catch (JAXBException | XMLStreamException e) {
+		} catch (JAXBException e) {
 			log.severe(e.toString());
 			request.getResponse().setStatusCode(500);
 			request.getResponse().setBody(e.getMessage());
