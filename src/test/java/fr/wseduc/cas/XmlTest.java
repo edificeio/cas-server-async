@@ -40,6 +40,7 @@ public class XmlTest {
 		StringWriter stringWriter = new StringWriter();
 		JAXBContext context = JAXBContext.newInstance(ServiceResponseType.class);
 		Marshaller marshaller = context.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 		XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newInstance()
 				.createXMLStreamWriter(stringWriter);
 		xmlStreamWriter.setPrefix("cas", "http://www.yale.edu/tp/cas");
