@@ -84,6 +84,9 @@ public class CasValidator extends Validator {
 					l.add(element);
 				}
 			}
+			if (user.getAdditionnalAttributes() != null && (! user.getAdditionnalAttributes().isEmpty())) {
+				authenticationSuccessType.getAdditionalAttributes().addAll(user.getAdditionnalAttributes());
+			}
 			ServiceResponseType serviceResponseType = new ServiceResponseType();
 			serviceResponseType.setAuthenticationSuccess(authenticationSuccessType);
 			sendResponse(request, serviceResponseType);

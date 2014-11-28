@@ -1,9 +1,15 @@
 package edu.yale.tp.cas;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+
+import org.w3c.dom.Element;
 
 
 /**
@@ -33,7 +39,8 @@ import javax.xml.bind.annotation.XmlType;
     "user",
     "attributes",
     "proxyGrantingTicket",
-    "proxies"
+    "proxies",
+    "additionalAttributes"
 })
 public class AuthenticationSuccessType {
 
@@ -42,6 +49,9 @@ public class AuthenticationSuccessType {
     protected AttributesType attributes;
     protected String proxyGrantingTicket;
     protected ProxiesType proxies;
+
+    @XmlAnyElement(lax = true)
+    protected List<Object> additionalAttributes;
 
     /**
      * Gets the value of the user property.
@@ -138,5 +148,33 @@ public class AuthenticationSuccessType {
     public void setProxies(ProxiesType value) {
         this.proxies = value;
     }
+
+	/**
+	 * CAS 2.0 protocol extension support
+	 * Returns a reference to the live list
+	 * Objects of the following type(s) are allowed in the list
+     * {@link Element }
+     * {@link Object }
+     *
+	 * @return the additionalAttributes
+	 */
+	public List<Object> getAdditionalAttributes() {
+		if (additionalAttributes == null) {
+			additionalAttributes = new ArrayList<Object>();
+		}
+		return additionalAttributes;
+	}
+
+	/**
+	 * CAS 2.0 protocol extension support
+	 * @param additionalAttributes the additionalAttributes to set
+	 *
+	 * Objects of the following type(s) are allowed in the list
+     * {@link Element }
+     * {@link Object }
+	 */
+	public void setAdditionalAttributes(List<Object> additionalAttributes) {
+		this.additionalAttributes = additionalAttributes;
+	}
 
 }
