@@ -120,7 +120,7 @@ public class CasValidator extends Validator {
 					try {
 						final Tuple<AuthCas, User> t = event.get();
 						AuthCas authCas = t._1;
-						final ServiceTicket st = authCas.getServiceTicket(ticket);
+						final ServiceTicket st = authCas.getServiceTicketByProxyTicket(ticket);
 						if (st != null && st.getPgt() != null && st.getPgt().exists(ticket)) {
 							final String [] urls = new String[st.getPgt().getPgtUrls().size()];
 							int i = urls.length;
