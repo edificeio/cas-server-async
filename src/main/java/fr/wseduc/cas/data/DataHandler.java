@@ -46,7 +46,7 @@ public abstract class DataHandler {
 
 	protected void validateService(final AuthCas authCas, final ServiceTicket st, final String service,
 			final Handler<Try<ValidationException, Tuple<AuthCas, User>>> handler) {
-		if (st.getService().equals(service)) {
+		if (st.getService().equalsIgnoreCase(service)) {
 			getUser(authCas.getUser(), service, new Handler<User>() {
 				@Override
 				public void handle(User user) {
@@ -94,7 +94,7 @@ public abstract class DataHandler {
 			public void handle(AuthCas authCas) {
 				if (authCas != null) {
 					ServiceTicket st = authCas.getServiceTicketByProxyGrantingTicket(pgt);
-					if (st != null && st.getService() != null && st.getService().equals(targetService)) {
+					if (st != null && st.getService() != null && st.getService().equalsIgnoreCase(targetService)) {
 						handler.handle(new Try<ValidationException, AuthCas>(authCas));
 					} else {
 						handler.handle(new Try<ValidationException, AuthCas>(
