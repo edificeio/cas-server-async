@@ -17,6 +17,7 @@ import fr.wseduc.cas.entities.LoginTicket;
 import fr.wseduc.cas.entities.ServiceTicket;
 import fr.wseduc.cas.exceptions.AuthenticationException;
 import fr.wseduc.cas.exceptions.Try;
+import fr.wseduc.cas.http.ClientResponse;
 import fr.wseduc.cas.http.HttpClient;
 import fr.wseduc.cas.http.HttpClientFactory;
 import fr.wseduc.cas.http.Request;
@@ -155,16 +156,22 @@ public class Credential {
 	}
 
 	private void singleLogout(AuthCas authCas) {
-		for (ServiceTicket st : authCas.getServiceTickets()) {
+		for (final ServiceTicket st : authCas.getServiceTickets()) {
 			try {
-				URI uri = new URI(st.redirectUri());
+				final URI uri = new URI(st.getService());
 				int port = uri.getPort() > 0 ? uri.getPort() :
 						("https".equals(uri.getScheme()) ? 443 : 80);
-				HttpClient client = httpClientFactory.create(uri.getHost(),
+				final HttpClient client = httpClientFactory.create(uri.getHost(),
 						port, "https".equals(uri.getScheme()));
-				String serviceUri = st.redirectUri().replaceFirst(
-						"^(?:([^:/?#]+):)?(?://((?:(([^:@]*):?([^:@]*))?@)?([^:/?#]*)(?::(\\\\d*))?))?", "");
-				client.post(serviceUri, sloBody(st.getTicket()), null);
+				log.fine("service uri for post slo request is " + st.getService() +  " ; with ticket : " + st.getTicket());
+				client.post(st.getService(), sloBody(st.getTicket()), new Handler<ClientResponse>() {
+					@Override
+					public void handle(ClientResponse cr) {
+						if (cr != null && cr.getStatusCode() != 200) {
+							log.warning("Bad response received for post logout request. Status code : " + cr.getStatusCode() + " with uri  : " + st.getService() + ", with ticket : " + st.getTicket());
+						}
+					}
+				});
 			} catch (URISyntaxException e) {
 				log.severe(e.getMessage());
 			}

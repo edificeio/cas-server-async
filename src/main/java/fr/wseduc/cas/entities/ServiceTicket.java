@@ -38,7 +38,7 @@ public class ServiceTicket {
 	}
 
 	public String redirectUri() {
-		return service + (service = (service.contains("?") ? "&" : "?") + ticketParameter + "=" + ticket);
+		return service + (service.contains("?") ? "&" : "?") + ticketParameter + "=" + ticket;
 	}
 
 	public ProxyGrantingTicket getPgt() {
