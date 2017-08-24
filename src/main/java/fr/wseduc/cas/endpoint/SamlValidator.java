@@ -236,14 +236,16 @@ public class SamlValidator extends Validator {
 	}
 
 	private void writeAttributes(XMLStreamWriter xw, User user) throws XMLStreamException {
-		for (Map.Entry<String, String> entry : user.getAttributes().entrySet()) {
-			xw.writeStartElement("", "Attribute ", "urn:oasis:names:tc:SAML:1.0:assertion");
-			xw.writeAttribute("AttributeName", entry.getKey());
-			xw.writeAttribute("AttributeNamespace", "http://www.ja-sig.org/products/cas");
-			xw.writeStartElement("", "AttributeValue ", "urn:oasis:names:tc:SAML:1.0:assertion");
-			xw.writeCharacters(entry.getValue());
-			xw.writeEndElement(); // AttributeValue
-			xw.writeEndElement(); // Attribute
+		if (user != null && user.getAttributes() != null) {
+			for (Map.Entry<String, String> entry : user.getAttributes().entrySet()) {
+				xw.writeStartElement("", "Attribute ", "urn:oasis:names:tc:SAML:1.0:assertion");
+				xw.writeAttribute("AttributeName", entry.getKey());
+				xw.writeAttribute("AttributeNamespace", "http://www.ja-sig.org/products/cas");
+				xw.writeStartElement("", "AttributeValue ", "urn:oasis:names:tc:SAML:1.0:assertion");
+				xw.writeCharacters(entry.getValue());
+				xw.writeEndElement(); // AttributeValue
+				xw.writeEndElement(); // Attribute
+			}
 		}
 	}
 
