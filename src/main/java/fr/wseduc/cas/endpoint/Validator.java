@@ -24,7 +24,7 @@ public abstract class Validator {
 
 	protected DataHandlerFactory dataHandlerFactory;
 	protected HttpClientFactory httpClientFactory;
-	protected static final Logger log = Logger.getLogger("Validator");
+	protected static final Logger log = Logger.getLogger(Validator.class.getName());
 
 	public abstract void serviceValidate(final Request request);
 

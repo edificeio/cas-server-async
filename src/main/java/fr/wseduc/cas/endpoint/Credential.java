@@ -28,7 +28,7 @@ public class Credential {
 	private CredentialResponse credentialResponse;
 	private HttpClientFactory httpClientFactory;
 	private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-	private static final Logger log = Logger.getLogger("Credential");
+	private static final Logger log = Logger.getLogger(Credential.class.getName());
 
 	public void loginRequestor(final Request request) {
 		final DataHandler dataHandler = dataHandlerFactory.create(request);
@@ -168,7 +168,7 @@ public class Credential {
 					@Override
 					public void handle(ClientResponse cr) {
 						if (cr != null && cr.getStatusCode() != 200) {
-							log.warning("Bad response received for post logout request. Status code : " + cr.getStatusCode() + " with uri  : " + st.getService() + ", with ticket : " + st.getTicket());
+							log.fine("Bad response received for post logout request. Status code : " + cr.getStatusCode() + " with uri  : " + st.getService() + ", with ticket : " + st.getTicket());
 						}
 					}
 				});
