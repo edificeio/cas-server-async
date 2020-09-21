@@ -10,6 +10,7 @@ public class ServiceTicket {
 	private ProxyGrantingTicket pgt;
 	private long issued;
 	private boolean used;
+	private String type;
 
 	public ServiceTicket() {
 
@@ -19,6 +20,14 @@ public class ServiceTicket {
 		this.service = service;
 		this.ticket = "ST-" + UUID.randomUUID().toString();
 		this.issued = System.currentTimeMillis();
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getTicket() {
