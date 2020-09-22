@@ -94,7 +94,7 @@ public class Credential {
 
 	private void generateServiceTicket(final Request request, final AuthCas authCas, final DataHandler dataHandler) {
 		final String service = request.getParameter("service") != null ? request.getParameter("service") : request.getParameter("TARGET");
-		dataHandler.validateService(service, new Handler<Boolean>(){
+		dataHandler.validateService(authCas, service, new Handler<Boolean>(){
 			@Override
 			public void handle(Boolean success) {
 				if (success) {

@@ -1,15 +1,26 @@
 package fr.wseduc.cas.entities;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class AuthCas {
 
 	private String id;
 	private LoginTicket loginTicket;
 	private String user;
+	private Set<String> structureIds = new HashSet<>();
 	private List<ServiceTicket> serviceTickets = new ArrayList<>();
 
+	public Set<String> getStructureIds() {
+		return structureIds;
+	}
+
+	public void setStructureIds(Set<String> structureIds) {
+		this.structureIds = structureIds;
+	}
+	
 	public void addServiceTicket(ServiceTicket serviceTicket) {
 		if (serviceTickets == null) {
 			serviceTickets = new ArrayList<>();
