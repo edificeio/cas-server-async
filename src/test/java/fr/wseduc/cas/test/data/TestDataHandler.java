@@ -20,7 +20,7 @@ public class TestDataHandler extends DataHandler {
 	}
 
 	@Override
-	public void validateService(String service, Handler<Boolean> handler) {
+	public void validateService(AuthCas authCas,String service, Handler<Boolean> handler) {
 
 	}
 
@@ -36,7 +36,7 @@ public class TestDataHandler extends DataHandler {
 	}
 
 	@Override
-	protected void getUser(String ticket, String service, Handler<User> handler) {
+	protected void getUser(AuthCas authCas, String service, Handler<User> handler) {
 
 	}
 
