@@ -11,6 +11,8 @@ public abstract class CredentialResponse {
 	public abstract void loginRequestorResponse(Request request, LoginTicket loginTicket,
 			String service, boolean renew, boolean gateway, String method);
 
+	public abstract void resetPasswordRequestorResponse(Request request);
+
 	public void loginAcceptorResponse(Request request, ServiceTicket serviceTicket) {
 		Response response = request.getResponse();
 		response.putHeader("Location", serviceTicket.redirectUri());

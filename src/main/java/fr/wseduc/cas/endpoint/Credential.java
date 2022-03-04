@@ -43,10 +43,14 @@ public class Credential {
 				if (!authCas.isLoggedIn()) {
 					credentialResponse.loginRequestorResponse(request, new LoginTicket(), service, renew, gateway, method);
 				} else {
-					if (service != null && !service.trim().isEmpty()) {
-						loginAcceptor(request, authCas);
+					if (authCas.getForceChangePassword()) {
+						credentialResponse.resetPasswordRequestorResponse(request);
 					} else {
-						credentialResponse.loggedIn(request);
+						if (service != null && !service.trim().isEmpty()) {
+							loginAcceptor(request, authCas);
+						} else {
+							credentialResponse.loggedIn(request);
+						}
 					}
 				}
 			}

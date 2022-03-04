@@ -12,7 +12,7 @@ public class AuthCas {
 	private String user;
 	private Set<String> structureIds = new HashSet<>();
 	private List<ServiceTicket> serviceTickets = new ArrayList<>();
-	private boolean forceChangePassword;
+	private boolean forceChangePassword = false;
 
 	public Set<String> getStructureIds() {
 		return structureIds;
