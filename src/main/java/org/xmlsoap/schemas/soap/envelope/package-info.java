@@ -5,9 +5,9 @@
 // Generated on: 2014.10.27 at 06:26:50 PM CET
 //
 
-@javax.xml.bind.annotation.XmlSchema(
+@jakarta.xml.bind.annotation.XmlSchema(
 		namespace = "http://schemas.xmlsoap.org/soap/envelope/",
 		xmlns = {
-				@javax.xml.bind.annotation.XmlNs(prefix="SOAP-ENV", namespaceURI="http://schemas.xmlsoap.org/soap/envelope/")
+				@jakarta.xml.bind.annotation.XmlNs(prefix="SOAP-ENV", namespaceURI="http://schemas.xmlsoap.org/soap/envelope/")
 		})
 package org.xmlsoap.schemas.soap.envelope;

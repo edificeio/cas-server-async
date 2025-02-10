@@ -5,11 +5,11 @@
 // Generated on: 2014.10.27 at 06:20:33 PM CET
 //
 
-@javax.xml.bind.annotation.XmlSchema(
+@jakarta.xml.bind.annotation.XmlSchema(
 		namespace = "urn:oasis:names:tc:SAML:1.0:assertion",
 		xmlns = {
-			@javax.xml.bind.annotation.XmlNs(prefix="saml", namespaceURI="urn:oasis:names:tc:SAML:1.0:assertion")
+			@jakarta.xml.bind.annotation.XmlNs(prefix="saml", namespaceURI="urn:oasis:names:tc:SAML:1.0:assertion")
 		},
-		elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED
+		elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED
 	)
 package urn.oasis.names.tc.saml.assertion;
