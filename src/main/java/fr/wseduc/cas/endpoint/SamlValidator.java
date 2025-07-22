@@ -44,7 +44,12 @@ public class SamlValidator extends Validator {
 					JAXBContext context = JAXBContext.newInstance(Envelope.class, ResponseType.class, AssertionType.class);
 					Unmarshaller unmarshaller = context.createUnmarshaller();
 					StringReader reader = new StringReader(body);
-					XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader(reader);
+
+					XMLInputFactory xif = XMLInputFactory.newFactory();
+					xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+					xif.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
+
+					XMLStreamReader xmlReader = xif.createXMLStreamReader(reader);
 					JAXBElement<Envelope> xmlRequest = unmarshaller.unmarshal(xmlReader, Envelope.class);
 
 					JAXBElement<RequestType> samlRequest = (JAXBElement<RequestType>) xmlRequest.getValue().getBody().getAny().get(0);
