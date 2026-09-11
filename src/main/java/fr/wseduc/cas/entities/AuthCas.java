@@ -11,6 +11,16 @@ public class AuthCas {
 	private LoginTicket loginTicket;
 	private String user;
 	private Set<String> structureIds = new HashSet<>();
+
+	/** For events **/
+	private String userOsName;
+	private String userOsVersion;
+	private String userDeviceType;
+	private String userDeviceName;
+    private String userIp;
+    private String userSessionId;
+	private String userUa;
+
 	private List<ServiceTicket> serviceTickets = new ArrayList<>();
 	private boolean forceChangePassword = false;
 
@@ -112,4 +122,60 @@ public class AuthCas {
 	public void setForceChangePassword(boolean forceChangePassword) {
 		this.forceChangePassword = forceChangePassword;
 	}
+
+    public String getUserOsName() {
+        return userOsName;
+    }
+
+    public void setUserOsName(String userOsName) {
+        this.userOsName = userOsName;
+    }
+
+    public String getUserOsVersion() {
+        return userOsVersion;
+    }
+
+    public void setUserOsVersion(String userOsVersion) {
+        this.userOsVersion = userOsVersion;
+    }
+
+    public String getUserDeviceType() {
+        return userDeviceType;
+    }
+
+    public void setUserDeviceType(String userDeviceType) {
+        this.userDeviceType = userDeviceType;
+    }
+
+    public String getUserDeviceName() {
+        return userDeviceName;
+    }
+
+    public void setUserDeviceName(String userDeviceName) {
+        this.userDeviceName = userDeviceName;
+    }
+
+    public String getUserIp() {
+        return userIp;
+    }
+
+    public void setUserIp(String userIp) {
+        this.userIp = userIp;
+    }
+
+    public String getUserSessionId() {
+        return userSessionId;
+    }
+
+    public void setUserSessionId(String userSessionId) {
+        this.userSessionId = userSessionId;
+    }
+
+    public String getUserUa() {
+        return userUa;
+    }
+
+    public void setUserUa(String userUa) {
+        this.userUa = userUa;
+    }
 }
